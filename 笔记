@@ -1,0 +1,12 @@
+spark部署模式:有分为standalone和yarn两种模式.主要区别在于:
+资源分配管理模式：standalone采用 
+spark自己的资源管理，而yarn采用yarn进行资源管理。
+spark运行模式：
+1、启动 sparkcontext(driver)
+2、sparkcontext 根据job 分析出dag图（划分为多个stage)
+3、向资源分配管理器申请资源、资源分配管理器接收信息，寻找excutor
+4、找到的excutor向driver申请 当前stage下的task用于执行
+5、每一个excutor 会处理数据 处理完的中间数据 放置在自己的内存中（如果内存不够，则会写本地文件），如果excutor先行执行完了，就等待，进程不杀死。
+6、等待当前stage的所有excutor都执行完成以后，driver分配下一个stage中的task给excutor
+7、excutor接收task，然后根据之前存储于自己内存中的数据，进行迭代计算
+8、当所有的stage都执行完成以后，每一个excutor根据sparkcontext的需求，获取将数据写到hdfs上，或者将数据返回写到driver端的本地文件上。
